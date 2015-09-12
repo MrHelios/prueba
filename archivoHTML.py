@@ -59,20 +59,35 @@ class Archivo_HTML:
     # ---------------------------------
     # En buscar: Ej: <style ,<script ,etc.
 
-    def multiple_TAG(self,archivo,lista,buscar="<style"):
-
+    def multiple_TAG(self,archivo,lista,buscar="<style",direccion="Google/Codigo_Modificado/CSS/"):
+        contador = 0;
         for i in range(len(lista)):
 
-            if buscar in lista[i]:
+            if ((buscar in "<style")and(buscar in lista[i])):
                 lista[i+1] = self.acomodador_TAG(lista[i+1],"{",3);
                 lista[i+1] = self.acomodador_TAG(lista[i+1],";",3);
                 lista[i+1] = self.acomodador_TAG(lista[i+1],"}",2,2);
+
+                self.archivo_TAG("escribir",direccion+str(contador)+".css",lista[i+1]);
+                lista[i]   = '''\t<link text="stylesheet" rel="CSS/'''+str(contador)+'''.css" > \n''';
+                lista[i+1] = "";
+                contador += 1;
+
+            elif ((buscar in "<script")and(buscar in lista[i])):
+                lista[i+1] = self.acomodador_TAG(lista[i+1],"\'",1,0,True);
+                lista[i+1] = self.acomodador_TAG(lista[i+1],"(function()",1);
+                lista[i+1] = self.acomodador_TAG(lista[i+1],";",1);
+
+                self.archivo_TAG("escribir",direccion+str(contador)+".js",lista[i+1]);
+                lista[i]   = '''\t<script src="JS/'''+str(contador)+'''.js" > \n''';
+                lista[i+1] = "\t</script>\n";
+                contador += 1;
 
         self.archivo_TAG("escribir",archivo,lista);
 
     # ---------------------------------
 
-    def acomodador_TAG(self,parte_lista, obj,cantTab=2,cantSaltoRenglon=1):
+    def acomodador_TAG(self,parte_lista, obj,cantTab=2,cantSaltoRenglon=1,cambio = False):
 
         if cantSaltoRenglon != 0:
             temp = parte_lista;
@@ -81,12 +96,68 @@ class Archivo_HTML:
             temp = string.join(temp);
 
         elif cantTab == 1:
-            temp = cantTab*"\t"+parte_lista;
+            
+            if not cambio:
+                temp = cantTab*"\t"+parte_lista;
+            else:
+                temp = parte_lista;
+                temp = temp.split(obj);
+                string = "\ "+" "+"'";
+                temp = string.join(temp);
 
         else:
             pass;
 
         return temp;
+
+    # ---------------------------------
+
+    def organizar_DOM(self,archivo,lista):
+
+        temp_lista = lista;
+        
+        i=0;
+        while i <= len(temp_lista):        
+
+            if '<div' in temp_lista[i]:
+                
+                j = i+1;
+                salir = True;
+                contador = 1;
+                while  (len(temp_lista) != j)or(salir) :
+
+                    if '<div' in temp_lista[j]:
+                        temp_lista[j] = ('\t'*contador)+temp_lista[j];
+                        contador += 1;                      
+
+                    elif '</div' in temp_lista[j]:
+                        if contador != 1:
+                            contador -= 1;
+                            temp_lista[j] = ('\t'*contador)+temp_lista[j];
+                        else:
+                            salir = False;
+
+                    else:
+                        temp_lista[j] = ('\t'*contador)+temp_lista[j];                        
+
+                    j += 1;
+                    i = j;
+
+            i += 1;
+
+        self.archivo_TAG('escribir',archivo,temp_lista);
+
+
+    # ---------------------------------
+
+    def codigo_CSS_JS(self,archivo_destino,lista):
+
+        c1 = Comprobar_Archivos();
+        c1.crear_carpeta("Google/Codigo_Modificado/CSS");
+        self.multiple_TAG(archivo_destino,lista);
+
+        c1.crear_carpeta("Google/Codigo_Modificado/JS");
+        self.multiple_TAG(archivo_destino,lista,"<script","Google/Codigo_Modificado/JS/");
 
     # ---------------------------------
 
@@ -118,4 +189,7 @@ class Archivo_HTML:
                 self.archivo_TAG('escribir',archivo_destino,temp_l);
 
         temp_l = self.archivo_TAG('leer',archivo_destino);
-        self.multiple_TAG(archivo_destino,temp_l);
+        self.codigo_CSS_JS(archivo_destino,temp_l);
+
+        temp_l = self.archivo_TAG('leer',archivo_destino);
+        self.organizar_DOM(archivo_destino,temp_l);
