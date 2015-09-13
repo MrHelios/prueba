@@ -26,7 +26,37 @@ class Tester:
 
         n1.cerrar();
 
+    def navegador_basico(self):
+
+        n1 = Navegador();
+        n1.abrir();
+        n1.direccion('www.facebook.com');
+
+        usuario = n1.buscar_elemento_tag('form');
+        usuario = n1.buscar_elemento_id('login_form',usuario);
+        usuario = n1.buscar_elemento_nombre('email',usuario);
+
+        n1.enviar_info(usuario,'hola face');
+
+        usuario = n1.buscar_elemento_tag('form');
+        usuario = n1.buscar_elemento_id('login_form',usuario);
+        usuario = n1.buscar_elemento_nombre('pass',usuario);
+
+        n1.enviar_info(usuario,'juajua');
+
+        usuario = n1.buscar_elemento_tag('form');
+        usuario = n1.buscar_elemento_id('login_form',usuario);
+        usuario = n1.buscar_elemento_id('loginbutton',usuario);
+
+        n1.enviar_info(usuario,'\n');
+
+        import time
+        time.sleep(5)        
+
+        n1.cerrar();
+
 
 if __name__=='__main__':
 
-    t = Tester().test_basico();
+    #t = Tester().test_basico();
+    t2 = Tester().navegador_basico();
