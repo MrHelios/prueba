@@ -59,7 +59,7 @@ class Archivo_HTML:
     # ---------------------------------
     # En buscar: Ej: <style ,<script ,etc.
 
-    def multiple_TAG(self,archivo,lista,buscar="<style",direccion="Google/Codigo_Modificado/CSS/"):
+    def multiple_TAG(self,archivo,lista,buscar="<style",direccion=""):
         contador = 0;
         for i in range(len(lista)):
 
@@ -112,12 +112,10 @@ class Archivo_HTML:
 
     # ---------------------------------
 
-    def organizar_DOM(self,archivo,lista):
-
-        temp_lista = lista;
+    def organizar_DOM(self,archivo,temp_lista):
         
         i=0;
-        while i <= len(temp_lista):        
+        while i < len(temp_lista):        
 
             if '<div' in temp_lista[i]:
                 
@@ -143,21 +141,30 @@ class Archivo_HTML:
                     j += 1;
                     i = j;
 
-            i += 1;
+            else:
+                i += 1;
 
         self.archivo_TAG('escribir',archivo,temp_lista);
 
 
     # ---------------------------------
 
+    def direccion_base(self):
+        temp = self.archivo_original.split("/");
+        self.direccion_carpeta = temp[0]+'/'+ temp[1];
+
+    # ---------------------------------
+
     def codigo_CSS_JS(self,archivo_destino,lista):
 
+        self.direccion_base();
+        
         c1 = Comprobar_Archivos();
-        c1.crear_carpeta("Google/Codigo_Modificado/CSS");
-        self.multiple_TAG(archivo_destino,lista);
+        c1.crear_carpeta(self.direccion_carpeta+"/CSS");
+        self.multiple_TAG(archivo_destino,lista,"<style",self.direccion_carpeta+"/CSS/");
 
-        c1.crear_carpeta("Google/Codigo_Modificado/JS");
-        self.multiple_TAG(archivo_destino,lista,"<script","Google/Codigo_Modificado/JS/");
+        c1.crear_carpeta(self.direccion_carpeta+"/JS");
+        self.multiple_TAG(archivo_destino,lista,"<script",self.direccion_carpeta+"/JS/");
 
     # ---------------------------------
 

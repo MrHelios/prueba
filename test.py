@@ -1,6 +1,7 @@
 from archivoHTML import Archivo_HTML;
 from archivador import Comprobar_Archivos;
 from navegador import Navegador;
+from manage import Manage;
 
 class Tester:
 
@@ -55,8 +56,14 @@ class Tester:
 
         n1.cerrar();
 
+    def manage_basico(self):
+
+        m = Manage('www.google.com.ar');
+        m.manage_inicial();
+
 
 if __name__=='__main__':
 
-    #t = Tester().test_basico();
-    t2 = Tester().navegador_basico();
+    #t  = Tester().test_basico();
+    #t2 = Tester().navegador_basico();
+    t3  = Tester().manage_basico(); 
